@@ -27,7 +27,7 @@
 	@brief Implementation Code of Semaphore Routines
 */
 
-#include "semaphore.h"
+#include "Semaphore.h"
 #include <iostream>
 using namespace std;
 
