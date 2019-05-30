@@ -106,15 +106,15 @@ void Ate::setOutputFile(string path)
 
 bool checkFile(const std::string& name) {
 	
-	//if (FILE *file = fopen(name.c_str(), "r")) {  //check if file exists
-	//	if (name.substr(name.find_last_of(".") + 1) == "pcm") { //check if file has the right extension
-	//		return true;
-	//	}
-	//	fclose(file);
-	//}
-	//else {
-	//	return false;
-	//}
+	if (FILE *file = fopen(name.c_str(), "r")) {  //check if file exists
+		if (name.substr(name.find_last_of(".") + 1) == "pcm") { //check if file has the right extension
+			return true;
+		}
+		fclose(file);
+	}
+	else {
+		return false;
+	}
 	return true;
 }
 
