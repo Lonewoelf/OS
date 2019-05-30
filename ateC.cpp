@@ -7,11 +7,13 @@
 
 using namespace std;
 
+string defaultPath = "C:\\Users\\Madita\\Documents\\";
+
 Ate::Ate()
 {
 	//default == max
-	this->inputFile = "C:\\Users\\Madita\\Documents\\input.pcm";
-	this->outputFile = "C:\\Users\\Madita\\Documents\\output.pcm";
+	this->inputFile = defaultPath + "input.pcm";
+	this->outputFile = defaultPath + "output.pcm";
 	this->maxThreads = 8;
 	this->treble = 6;
 	this->bass = 6;
@@ -168,7 +170,7 @@ void Ate::computeInput(int argc, char * argv[])
 		}
 	}
 	else {
-		string path = "C:\\Users\\Madita\\Documents\\";
+		string path = defaultPath;
 		path += string(argv[1]);
 		ifstream myAudio(path, ios::in | ios::binary);
 
@@ -199,4 +201,5 @@ void Ate::divideIntoBlocks()
 	while (myAudio.read((char*)& sample, sizeof(signed short))) {
 		input.push_back(sample);
 	}
+	myAudio.close();
 }
