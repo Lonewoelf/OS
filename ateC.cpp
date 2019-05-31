@@ -23,32 +23,46 @@ Ate::~Ate()
 {
 }
 
-void Ate::bassCoefficients(int intensity, double *b0, double *b1, double *b2, double *a1, double *a2)
+void Ate::bassCoefficients(int intensity, double* b0, double* b1, double* b2, double* a0, double* a1)
 {
-	double frequency = 330;     double qFactor = 0.5;     double gain = intensity;     double sampleRate = 44100;
+	double frequency = 330;     
+	double qFactor = 0.5;     
+	double gain = intensity;     
+	double sampleRate = 44100;
 
-	double pi = 4.0*atan(1);     double a = pow(10.0, gain / 40);     double w0 = 2 * pi*frequency / sampleRate;     double alpha = sin(w0) / (2.0*qFactor);
+	double pi = 4.0*atan(1);     
+	double a = pow(10.0, gain / 40);     
+	double w0 = 2 * pi*frequency / sampleRate;     
+	double alpha = sin(w0) / (2.0*qFactor);
 	double a0 = (a + 1) + (a - 1)*cos(w0) + 2.0*sqrt(a)*alpha;
 
-	*a1 = -(-2.0*((a - 1) + (a + 1)*cos(w0))) / a0;
-	*a2 = -((a + 1) + (a - 1)*cos(w0) - 2.0*sqrt(a)*alpha) / a0;
-	*b0 = (a*((a + 1) - (a - 1)*cos(w0) + 2.0*sqrt(a)*alpha)) / a0;
-	*b1 = (2 * a*((a - 1) - (a + 1)*cos(w0))) / a0;
-	*b2 = (a*((a + 1) - (a - 1)*cos(w0) - 2.0*sqrt(a)*alpha)) / a0;
+	*a1 = -(-2.0 * ((a - 1) + (a + 1) * cos(w0))) / *a0;
+	*a2 = -((a + 1) + (a - 1) * cos(w0) - 2.0 * sqrt(a) * alpha) / *a0;
+
+	*b0 = (a * ((a + 1) - (a - 1) * cos(w0) + 2.0 * sqrt(a) * alpha)) / *a0;
+	*b1 = (2 * a * ((a - 1) - (a + 1) * cos(w0))) / *a0;
+	*b2 = (a * ((a + 1) - (a - 1) * cos(w0) - 2.0 * sqrt(a) * alpha)) / *a0;
 }
 
-void Ate::trebleCoefficients(int intensity, double *b0, double *b1, double *b2, double *a1, double *a2)
+void Ate::trebleCoefficients(int intensity, double* b0, double* b1, double* b2, double* a0, double* a1)
 {
-	double frequency = 3300;     double qFactor = 0.5;     double gain = intensity;     double sampleRate = 44100;
+	double frequency = 3300;
+	double qFactor = 0.5;
+	double gain = intensity;
+	double sampleRate = 44100;
 
-	double pi = 4.0*atan(1);     double a = pow(10.0, gain / 40);     double w0 = 2 * pi*frequency / sampleRate;     double alpha = sin(w0) / (2.0*qFactor);
+	double pi = 4.0*atan(1);
+	double a = pow(10.0, gain / 40);
+	double w0 = 2 * pi*frequency / sampleRate;
+	double alpha = sin(w0) / (2.0*qFactor);
 	double a0 = (a + 1) - (a - 1)*cos(w0) + 2.0*sqrt(a)*alpha;
 
-	*a1 = -(2.0*((a - 1) - (a + 1)*cos(w0))) / a0;
-	*a2 = -((a + 1) - (a - 1)*cos(w0) - 2.0*sqrt(a)*alpha) / a0;
-	*b0 = (a*((a + 1) + (a - 1)*cos(w0) + 2.0*sqrt(a)*alpha)) / a0;
-	*b1 = (-2.0*a*((a - 1) + (a + 1)*cos(w0))) / a0;
-	*b2 = (a*((a + 1) + (a - 1)*cos(w0) - 2.0*sqrt(a)*alpha)) / a0;
+	*a1 = -(2.0*((a - 1) - (a + 1)*cos(w0))) / *a0;
+	*a2 = -((a + 1) - (a - 1)*cos(w0) - 2.0*sqrt(a)*alpha) / *a0;
+
+	*b0 = (a*((a + 1) + (a - 1)*cos(w0) + 2.0*sqrt(a)*alpha)) / *a0;
+	*b1 = (-2.0*a*((a - 1) + (a + 1)*cos(w0))) / *a0;
+	*b2 = (a*((a + 1) + (a - 1)*cos(w0) - 2.0*sqrt(a)*alpha)) / *a0;
 }
 
 void Ate::usage()
@@ -191,15 +205,60 @@ void Ate::computeInput(int argc, char * argv[])
 	}
 }
 
+
+
 void Ate::divideIntoBlocks()
 {
 	ifstream myAudio(this->inputFile, ios::in | ios::binary);
 
-	vector<signed short> input;
-	signed short sample;
+
 
 	while (myAudio.read((char*)& sample, sizeof(signed short))) {
-		input.push_back(sample);
+		inputBuff.push_back(sample);
 	}
 	myAudio.close();
+}
+
+
+unsigned short Ate::biquad(double* b0, double* b1, double* b2, double* a0, double* a1)
+{
+	//init size here
+	unsigned size = inputBuff.size();
+	vector<int16_t> data;
+	for (int i = 0; i < size; i++)
+	{
+		if (i == 0)
+		{
+			//als er nog geen data in de data vector zit, moet deze eerst aan de hand van onderstaande formule worden ingevoegd
+			data.push_back(*b0 * inputBuff[i]);
+		}
+		if (i == 1)
+		{
+			//als er maar 1 data element in de vector staat moet onderstaande formule worden toegepast
+			data.push_back(*b0 * inputBuff[i] + *b1 * this->inputBuff[i - 1] + *a1 * data[i - 1]);
+		}
+		else
+		{
+			//nu zijn er genoeg gegevens in de data vector om de volledige formule toe te passen
+			data.push_back(*b0 * this->inputBuff[i] + *b1 * this->inputBuff[i - 1] + *b2 * this->inputBuff[i - 2] + *a1 * data[i - 1] + *a2 * data[i - 2]);
+		}
+		this->inputBuff = move(data);
+	}
+}
+
+void Ate::writeOutput()
+{
+	ofstream outputAudio;
+	outputAudio.open(this->outputFile, ios::out | ios::binary);
+	/*
+	schrijf hier de data weg naar de output file
+	outputAudio << 
+	*/
+	outputAudio.close();
+
+}
+
+void Ate::worker()
+{
+
 }

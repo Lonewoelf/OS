@@ -15,12 +15,22 @@ public:
 	void setBass(int bass);
 	void setInputFile(string path);
 	void setOutputFile(string path);
+	void writeOutput();
+
+	unsigned short biquad(double*, double*, double*, double*, double*);
 
 	void computeInput(int argc, char *argv[]);
 	void divideIntoBlocks();
+	void worker();
 
 private:
 	int maxThreads, treble, bass;
 	string inputFile, outputFile;
 	signed short Blocks[1000];
+	vector<signed short> inputBuff;
+	signed short sample;
+	double *b0, *b1, *b2;
+	double *a1, *a2;
+
+	
 };
