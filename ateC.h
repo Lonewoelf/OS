@@ -28,6 +28,7 @@ private:
 	string inputFile, outputFile;
 	signed short Blocks[1000];
 	vector<signed short> inputBuff;
+	vector<int16_t> data;
 	signed short sample;
 	double *b0, *b1, *b2;
 	double *a1, *a2;
