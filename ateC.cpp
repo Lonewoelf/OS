@@ -308,11 +308,17 @@ DWORD WINAPI Ate::trebleFilter(LPVOID info) //Zo kan de functie wel aangeroepen 
 
 void Ate::writeOutput()
 {
+	cout << "writeOutput" << endl;
 	ofstream outputFile;
 	outputFile.open(this->outputFile, ios::out | ios::binary);
 	if (outputFile.is_open())
 	{
+		cout << "File is opened" << endl;
 		outputFile.write(reinterpret_cast<char*>(&inputBuff), sizeof(signed short));
+	}
+	else
+	{
+		cout << "failed to open file" << endl;
 	}
 }
 
