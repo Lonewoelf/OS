@@ -13,7 +13,7 @@
 
 using namespace std;
 
-string defaultPath = "C:\\Users\\Madita\\Documents\\";
+string defaultPath = "C:\\Users\\2125228\\Documents\\Github\\OS\\";
 mutex mtx;
 
 Ate::Ate()
@@ -308,18 +308,12 @@ DWORD WINAPI Ate::trebleFilter(LPVOID info) //Zo kan de functie wel aangeroepen 
 
 void Ate::writeOutput()
 {
-	ofstream outputAudio;
-	outputAudio.open(this->outputFile, ios::out | ios::binary);
-	/*
-	schrijf hier de data weg naar de output file
-
-	unsigned size = inputBuff.size();
-	for(int i = 0; i < size; i++)
+	ofstream outputFile;
+	outputFile.open(this->outputFile, ios::out | ios::binary);
+	if (outputFile.is_open())
 	{
-		outputAudio << inputBuff.at(i);
+		outputFile.write(reinterpret_cast<char*>(&inputBuff), sizeof(signed short));
 	}
-	*/
-	outputAudio.close();
 }
 
 void Ate::worker()
@@ -329,6 +323,6 @@ void Ate::worker()
 		Coefficients args = { b0, b1, b2, a1, a2 };
 		CreateThread(0, 0, trebleFilter, &args, 0, NULL);
 		CreateThread(0, 0, bassFilter, &args, 0, NULL); //Bass filter moet nog aangepast worden, zie trebleFilter
+		writeOutput();
 	}
-	writeOutput();
 }
