@@ -1,4 +1,5 @@
 #pragma once
+
 /*
 	Copyright (c) 2011, Dongsheng Song <songdongsheng@live.cn>
 
@@ -110,6 +111,7 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
+
 
 /** @} */
 

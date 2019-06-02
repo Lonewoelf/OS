@@ -19,11 +19,10 @@ public:
 	void setOutputFile(string path);
 	void writeOutput();
 
-	DWORD WINAPI bassFilter(double*, double*, double*, double*, double* );
-	DWORD WINAPI trebleFilter(double*, double*, double*, double*, double*);
+	DWORD WINAPI bassFilter(LPVOID );
+	DWORD WINAPI trebleFilter(LPVOID);
 
-	void bassFilter(double*, double*, double*, double*, double*);
-	void trebleFilter(double*, double*, double*, double*, double*);
+	
 
 
 	void computeInput(int argc, char *argv[]);

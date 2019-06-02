@@ -239,38 +239,39 @@ void Ate::divideIntoBlocks()
 	myAudio.close();
 }
 
-DWORD WINAPI Ate::bassFilter(double* b0, double* b1, double* b2, double* a1, double* a2)
+DWORD WINAPI Ate::bassFilter(LPVOID info)
 {
-	
-	//init size here
 	unique_lock<mutex> lck(mtx, defer_lock);
-	unsigned size = inputBlocks.size();
-	
+	//init size here
+	Ate *ate = reinterpret_cast<Ate*>(info);
+
+	unsigned size = ate->inputBlocks.size();
+
 	for (int i = 0; i < size; i++)
 	{
 		if (i == 0)
 		{
 			//als er nog geen data in de data vector zit, moet deze eerst aan de hand van onderstaande formule worden ingevoegd
-			data.push_back(*b0 * this->inputBlocks.at(i).getSample());
+			ate->data.push_back(*ate->b0 * ate->inputBlocks.at(i).getSample());
 		}
 		if (i == 1)
 		{
 			//als er maar 1 data element in de vector staat moet onderstaande formule worden toegepast
-			data.push_back(*b0 * this->inputBlocks.at(i).getSample() + *b1 * this->inputBlocks.at(i - 1).getSample() + *a1 * data[i - 1]);
+			ate->data.push_back(*ate->b0 * ate->inputBlocks.at(i).getSample() + *ate->b1 * ate->inputBlocks.at(i - 1).getSample() + *ate->a1 * ate->data[i - 1]);
 		}
 		else
 		{
 			//nu zijn er genoeg gegevens in de data vector om de volledige formule toe te passen
-			data.push_back(*b0 * this->inputBlocks.at(i).getSample() + *b1 * this->inputBlocks.at(i - 1).getSample() + *b2 * this->inputBlocks.at(i - 2).getSample() + *a1 * data[i - 1] + *a2 * data[i - 2]);
+			ate->data.push_back(*ate->b0 * ate->inputBlocks.at(i).getSample() + *ate->b1 * ate->inputBlocks.at(i).getSample() + *ate->b2 * ate->inputBlocks.at(i - 2).getSample() + *ate->a1 * ate->data[i - 1] + *ate->a2 * ate->data[i - 2]);
 		}
-		this->inputBuff = move(data);
+		ate->inputBuff = move(ate->data);
 	}
 	lck.unlock();
 	return 0;
 }
 
 
-DWORD WINAPI trebleFilter(LPVOID info) //Zo kan de functie wel aangeroepen worden vanuit de thread
+DWORD WINAPI Ate::trebleFilter(LPVOID info) //Zo kan de functie wel aangeroepen worden vanuit de thread
 {
 	unique_lock<mutex> lck(mtx, defer_lock);
 	//init size here
