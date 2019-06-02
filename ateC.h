@@ -19,8 +19,8 @@ public:
 	void setOutputFile(string path);
 	void writeOutput();
 
-	DWORD WINAPI bassFilter(LPVOID);
-	DWORD WINAPI trebleFilter(LPVOID);
+	static DWORD WINAPI bassFilter(LPVOID);
+	static DWORD WINAPI trebleFilter(LPVOID);
 
 	void computeInput(int argc, char *argv[]);
 	void divideIntoBlocks();

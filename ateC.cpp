@@ -1,7 +1,4 @@
-/*
-deze define haalt de waarschuwing van fopen weg, maar liever op een chiquere manier oplossen
 #define _CRT_SECURE_NO_WARNINGS
-*/
 
 #include <iostream>
 #include <math.h>
@@ -333,7 +330,7 @@ void Ate::worker()
 	{
 		Coefficients args = { b0, b1, b2, a1, a2 };
 		CreateThread(0, 0, trebleFilter, &args, 0, NULL);
-		CreateThread(0, 0, fbassFilter, &args, 0, NULL); //Bass filter moet nog aangepast worden, zie trebleFilter
+		CreateThread(0, 0, bassFilter, &args, 0, NULL); //Bass filter moet nog aangepast worden, zie trebleFilter
 	}
 	writeOutput();
 }
