@@ -6,10 +6,12 @@
 #include "semaphore.h"
 #include "ateC.h"
 #include <Windows.h>
+#include <mutex>
 
 using namespace std;
 
 string defaultPath = "C:\\Users\\Madita\\Documents\\";
+mutex mtx;
 
 Ate::Ate()
 {
@@ -237,6 +239,7 @@ DWORD WINAPI Ate::bassFilter(double* b0, double* b1, double* b2, double* a1, dou
 {
 	
 	//init size here
+	unique_lock<mutex> lck(mtx, defer_lock);
 	unsigned size = inputBlocks.size();
 	
 	for (int i = 0; i < size; i++)
@@ -258,11 +261,14 @@ DWORD WINAPI Ate::bassFilter(double* b0, double* b1, double* b2, double* a1, dou
 		}
 		this->inputBuff = move(data);
 	}
+	lck.unlock();
+	return 0;
 }
 
 
 DWORD WINAPI Ate::trebleFilter(double* b0, double* b1, double* b2, double* a0, double* a1)
 {
+	unique_lock<mutex> lck(mtx, defer_lock);
 	//init size here
 	unsigned size = inputBlocks.size();
 
@@ -286,6 +292,7 @@ DWORD WINAPI Ate::trebleFilter(double* b0, double* b1, double* b2, double* a0, d
 		this->inputBuff = move(data);
 		this->inputBlocks.at(i).setStatus(1);
 	}
+	lck.unlock();
 	return 0;
 }
 
@@ -295,10 +302,14 @@ void Ate::writeOutput()
 	outputAudio.open(this->outputFile, ios::out | ios::binary);
 	/*
 	schrijf hier de data weg naar de output file
-	outputAudio << 
+
+	unsigned size = inputBuff.size();
+	for(int i = 0; i < size; i++)
+	{
+		outputAudio << inputBuff.at(i);
+	}
 	*/
 	outputAudio.close();
-
 }
 
 void Ate::worker()
