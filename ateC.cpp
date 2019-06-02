@@ -233,9 +233,9 @@ void Ate::divideIntoBlocks()
 	myAudio.close();
 }
 
-void Ate::bassFilter(LPVOID pArgs)
+void Ate::bassFilter(double* b0, double* b1, double* b2, double* a1, double* a2)
 {
-	Coefficients *pArgs = (Coefficients*)pArgs;
+	
 	//init size here
 	unsigned size = inputBlocks.size();
 	
@@ -260,31 +260,8 @@ void Ate::bassFilter(LPVOID pArgs)
 	}
 }
 
-void Ate::trebleFilter(LPVOID pArgs)
+void Ate::trebleFilter(double* b0, double* b1, double* b2, double* a1, double* a2)
 {
-	Coefficients *pArgs = (Coefficients*)pArgs;
-	//init size here
-	unsigned size = inputBlocks.size();
-
-	for (int i = 0; i < size; i++)
-	{
-		if (i == 0)
-		{
-			//als er nog geen data in de data vector zit, moet deze eerst aan de hand van onderstaande formule worden ingevoegd
-			data.push_back(*b0 * inputBlocks[i]);
-		}
-		if (i == 1)
-		{
-			//als er maar 1 data element in de vector staat moet onderstaande formule worden toegepast
-			data.push_back(*b0 * inputBlocks[i] + *b1 * this->inputBlocks[i - 1] + *a1 * data[i - 1]);
-		}
-		else
-		{
-			//nu zijn er genoeg gegevens in de data vector om de volledige formule toe te passen
-			data.push_back(*b0 * this->inputBlocks[i] + *b1 * this->inputBlocks[i - 1] + *b2 * this->inputBlocks[i - 2] + *a1 * data[i - 1] + *a2 * data[i - 2]);
-		}
-		this->inputBuff = move(data);
-	}
 }
 
 void Ate::writeOutput()
@@ -301,12 +278,10 @@ void Ate::writeOutput()
 
 void Ate::worker()
 {
-	for (int i = 0; i < maxThreads; i++)
+	for (int i = 0; i < getMaxThread(); i++)
 	{
 		Coefficients args = { b0, b1, b2, a1, a2 };
 		CreateThread(NULL, 0, this->bassFilter, &args, 0, NULL);
 		CreateThread(NULL, 0, this->trebleFilter, &args, 0, NULL);
 	}
-	
-
 }

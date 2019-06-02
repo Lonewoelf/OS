@@ -19,8 +19,8 @@ public:
 	void setOutputFile(string path);
 	void writeOutput();
 
-	void bassFilter(LPVOID);
-	void trebleFilter(LPVOID);
+	void bassFilter(double*, double*, double*, double*, double*);
+	void trebleFilter(double*, double*, double*, double*, double*);
 
 	void computeInput(int argc, char *argv[]);
 	void divideIntoBlocks();
