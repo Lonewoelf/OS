@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <Windows.h>
 #include "block.h"
 using namespace std;
 

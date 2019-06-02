@@ -9,8 +9,6 @@ public:
 	void setStatus(bool);
 	bool getStatus();
 
-	friend std::ostream &operator << (std::ostream &out, Block *b);
-
 private:
 	signed short inputBuff;
 	bool status;

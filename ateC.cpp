@@ -11,8 +11,6 @@
 #include "ateC.h"
 
 
-
-
 using namespace std;
 
 string defaultPath = "C:\\Users\\Madita\\Documents\\";
