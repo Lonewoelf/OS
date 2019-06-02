@@ -243,7 +243,7 @@ void Ate::divideIntoBlocks()
 	//worker();
 	unsigned size = this->inputBlocks.size();
 	for (int i = 0; i < size; i++) {
-		data.push_back(inputBlocks.at(i).getsample());
+		data.push_back(inputBlocks.at(i).getSample());
 	}
 	this->inputBuff = move(this->data);
 
