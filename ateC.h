@@ -35,6 +35,6 @@ private:
 	vector<Block> inputBlocks;
 	vector<signed short> data;
 	signed short sample;
-	double *bassb0, *bassb1, *bassb2, *bassa1, *bassa2;
-	double *trebleb0, *trebleb1, *trebleb2, *treblea1, *treblea2;	
+	double bassb0, bassb1, bassb2, bassa1, bassa2;
+	double trebleb0, trebleb1, trebleb2, treblea1, treblea2;	
 };

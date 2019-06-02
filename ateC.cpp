@@ -48,11 +48,11 @@ void Ate::bassCoefficients(int intensity, double *b0, double *b1, double *b2, do
 	double alpha = sin(w0) / (2.0*qFactor);
 	double a0 = (a + 1) + (a - 1)*cos(w0) + 2.0*sqrt(a)*alpha;
 
-	*a1 = -(-2.0*((a - 1) + (a + 1)*cos(w0))) / a0;
-	*a2 = -((a + 1) + (a - 1)*cos(w0) - 2.0*sqrt(a)*alpha) / a0;
-	*b0 = (a*((a + 1) - (a - 1)*cos(w0) + 2.0*sqrt(a)*alpha)) / a0;
-	*b1 = (2 * a*((a - 1) - (a + 1)*cos(w0))) / a0;
-	*b2 = (a*((a + 1) - (a - 1)*cos(w0) - 2.0*sqrt(a)*alpha)) / a0;
+	bassa1 = -(-2.0*((a - 1) + (a + 1)*cos(w0))) / a0;
+	bassa2 = -((a + 1) + (a - 1)*cos(w0) - 2.0*sqrt(a)*alpha) / a0;
+	bassb0 = (a*((a + 1) - (a - 1)*cos(w0) + 2.0*sqrt(a)*alpha)) / a0;
+	bassb1 = (2 * a*((a - 1) - (a + 1)*cos(w0))) / a0;
+	bassb2 = (a*((a + 1) - (a - 1)*cos(w0) - 2.0*sqrt(a)*alpha)) / a0;
 }
 
 void Ate::trebleCoefficients(int intensity, double *b0, double *b1, double *b2, double *a1, double *a2)
@@ -68,11 +68,11 @@ void Ate::trebleCoefficients(int intensity, double *b0, double *b1, double *b2, 
 	double alpha = sin(w0) / (2.0*qFactor);
 	double a0 = (a + 1) - (a - 1)*cos(w0) + 2.0*sqrt(a)*alpha;
 
-	*a1 = -(2.0*((a - 1) - (a + 1)*cos(w0))) / a0;
-	*a2 = -((a + 1) - (a - 1)*cos(w0) - 2.0*sqrt(a)*alpha) / a0;
-	*b0 = (a*((a + 1) + (a - 1)*cos(w0) + 2.0*sqrt(a)*alpha)) / a0;
-	*b1 = (-2.0*a*((a - 1) + (a + 1)*cos(w0))) / a0;
-	*b2 = (a*((a + 1) + (a - 1)*cos(w0) - 2.0*sqrt(a)*alpha)) / a0;
+	treblea1 = -(2.0*((a - 1) - (a + 1)*cos(w0))) / a0;
+	treblea2 = -((a + 1) - (a - 1)*cos(w0) - 2.0*sqrt(a)*alpha) / a0;
+	trebleb0 = (a*((a + 1) + (a - 1)*cos(w0) + 2.0*sqrt(a)*alpha)) / a0;
+	trebleb1 = (-2.0*a*((a - 1) + (a + 1)*cos(w0))) / a0;
+	trebleb2 = (a*((a + 1) + (a - 1)*cos(w0) - 2.0*sqrt(a)*alpha)) / a0;
 }
 
 void Ate::usage()
@@ -249,8 +249,6 @@ void Ate::divideIntoBlocks()
 	this->writeOutput();
 }
 
-
-
 void Ate::trebleFilter(vector<signed short> inputBlock, vector<signed short>* outputBlock) //Zo kan de functie wel aangeroepen worden vanuit de thread
 {
 	int size = inputBlock.size();
@@ -259,7 +257,7 @@ void Ate::trebleFilter(vector<signed short> inputBlock, vector<signed short>* ou
 		signed short sample = 0;
 		if (i != 1 && i != 0)
 		{
-			sample = *trebleb0 * inputBlock.at(i) + *trebleb1 * inputBlock.at(i - 1) + *trebleb2 * inputBlock.at(i - 2) + *treblea1 * outputBlock->at(i - 1) + *treblea2 * outputBlock->at(i - 2);
+			sample = trebleb0 * inputBlock.at(i) + trebleb1 * inputBlock.at(i - 1) + trebleb2 * inputBlock.at(i - 2) + treblea1 * outputBlock->at(i - 1) + treblea2 * outputBlock->at(i - 2);
 		}
 		outputBlock->push_back(sample);
 	}
@@ -273,7 +271,7 @@ void Ate::bassFilter(vector<signed short> inputBlock, vector<signed short>* outp
 		signed short sample = 0;
 		if (i != 1 && i != 0)
 		{
-			sample = *bassb0 * inputBlock.at(i) + *bassb1 * inputBlock.at(i - 1) + *bassb2 * inputBlock.at(i - 2) + *bassa1 * outputBlock->at(i - 1) + *bassa2 * outputBlock->at(i - 2);
+			sample = bassb0 * inputBlock.at(i) + bassb1 * inputBlock.at(i - 1) + bassb2 * inputBlock.at(i - 2) + bassa1 * outputBlock->at(i - 1) + bassa2 * outputBlock->at(i - 2);
 		}
 		outputBlock->push_back(sample);
 	}
@@ -299,9 +297,9 @@ void Ate::worker()
 {
 	for (int i = 0; i < getMaxThread(); i++)
 	{
-		Coefficients args = { b0, b1, b2, a1, a2 };
-		CreateThread(0, 0, trebleFilter, &args, 0, NULL);
-		CreateThread(0, 0, bassFilter, &args, 0, NULL); //Bass filter moet nog aangepast worden, zie trebleFilter
+		//Coefficients args = { b0, b1, b2, a1, a2 };
+		//CreateThread(0, 0, trebleFilter, &args, 0, NULL);
+		//CreateThread(0, 0, bassFilter, &args, 0, NULL); //Bass filter moet nog aangepast worden, zie trebleFilter
 		writeOutput();
 	}
 }
