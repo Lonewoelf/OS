@@ -10,3 +10,8 @@ Block::Block(signed short inputBuff, int id)
 Block::~Block()
 {
 }
+
+signed short Block::getSample()
+{
+	return this->inputBuff;
+}
