@@ -13,7 +13,7 @@
 
 using namespace std;
 
-string defaultPath = "C:\\Users\\2125228\\Documents\\Github\\OS\\";
+string defaultPath = "C:\\Users\\Madita\\Documents\\";
 mutex mtx;
 
 Ate::Ate()
@@ -164,14 +164,14 @@ void Ate::computeInput(int argc, char * argv[])
 		cout << "No arguments given" << endl;
 		usage();
 	}
-	if ((string(argv[1]) == "-p" || string(argv[1]) == "-b" || string(argv[1]) == "-t") && argc != 3) {
+	if ((string(argv[1]) == "-p" || string(argv[1]) == "-b" || string(argv[1]) == "-t") && argc < 3) {
 		cout << "Not enough arguments for option: " << argv[1] << endl;
 		usage();
 	}
 	if (string(argv[1]) == "-p") {
 		long num = strtol(argv[2], &p, 10); //convert argv[2] to long for comparing reasons
 		if (num <= 8 && num >= 1) {
-			cout << "max threads: " << argv[2]; //test
+			cout << "max threads: " << argv[2] << endl; //test
 			maxThreads = strtol(argv[2], &p, 10); // set max threads to argv[2]
 		}
 		else {
@@ -184,7 +184,7 @@ void Ate::computeInput(int argc, char * argv[])
 	if (string(argv[3]) == "-b") {
 		long num = strtol(argv[4], &p, 10);
 		if (num <= 6 && num >= -6) {
-			cout << "bass is now: " << argv[2]; //test
+			cout << "bass is now: " << argv[4] << endl; //test
 			bass = strtol(argv[4], &p, 10); //pass argv[2] to bass function
 		}
 		else {
@@ -197,7 +197,7 @@ void Ate::computeInput(int argc, char * argv[])
 	if (string(argv[5]) == "-t") {
 		long num = strtol(argv[6], &p, 10);
 		if (num <= 6 && num >= -6) {
-			cout << "treble is now: " << argv[2]; //test
+			cout << "treble is now: " << argv[6] << endl; //test
 			treble = strtol(argv[6], &p, 10); //pass argv[2] to treble function
 		}
 		else {
@@ -240,7 +240,14 @@ void Ate::divideIntoBlocks()
 		i++;
 	}
 	myAudio.close();
-	worker();
+	//worker();
+	unsigned size = this->inputBlocks.size();
+	for (int i = 0; i < size; i++) {
+		data.push_back(inputBlocks.at(i).getsample());
+	}
+	this->inputBuff = move(this->data);
+
+	this->writeOutput();
 }
 
 DWORD WINAPI Ate::bassFilter(LPVOID info)
@@ -314,7 +321,7 @@ void Ate::writeOutput()
 	if (outputFile.is_open())
 	{
 		cout << "File is opened" << endl;
-		outputFile.write(reinterpret_cast<char*>(&inputBuff), sizeof(signed short));
+		outputFile.write((char*)&inputBuff[0], this->inputBuff.size() * sizeof(signed short));
 	}
 	else
 	{
