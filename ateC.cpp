@@ -32,46 +32,44 @@ struct Coefficients
 	double* b0; double* b1; double* b2; double* a1; double* a2;
 };
 
-void Ate::bassCoefficients(int intensity, double* b0, double* b1, double* b2, double* a0, double* a1)
+void Ate::bassCoefficients(int intensity, double *b0, double *b1, double *b2, double *a1, double *a2)
 {
-	double frequency = 330;     
-	double qFactor = 0.5;     
-	double gain = intensity;     
+	double frequency = 330;
+	double qFactor = 0.5; 
+	double gain = intensity; 
 	double sampleRate = 44100;
 
-	double pi = 4.0*atan(1);     
-	double a = pow(10.0, gain / 40);     
-	double w0 = 2 * pi*frequency / sampleRate;     
+	double pi = 4.0*atan(1); 
+	double a = pow(10.0, gain / 40); 
+	double w0 = 2 * pi*frequency / sampleRate; 
 	double alpha = sin(w0) / (2.0*qFactor);
 	double a0 = (a + 1) + (a - 1)*cos(w0) + 2.0*sqrt(a)*alpha;
 
-	*a1 = -(-2.0 * ((a - 1) + (a + 1) * cos(w0))) / *a0;
-	*a2 = -((a + 1) + (a - 1) * cos(w0) - 2.0 * sqrt(a) * alpha) / *a0;
-
-	*b0 = (a * ((a + 1) - (a - 1) * cos(w0) + 2.0 * sqrt(a) * alpha)) / *a0;
-	*b1 = (2 * a * ((a - 1) - (a + 1) * cos(w0))) / *a0;
-	*b2 = (a * ((a + 1) - (a - 1) * cos(w0) - 2.0 * sqrt(a) * alpha)) / *a0;
+	*a1 = -(-2.0*((a - 1) + (a + 1)*cos(w0))) / a0;
+	*a2 = -((a + 1) + (a - 1)*cos(w0) - 2.0*sqrt(a)*alpha) / a0;
+	*b0 = (a*((a + 1) - (a - 1)*cos(w0) + 2.0*sqrt(a)*alpha)) / a0;
+	*b1 = (2 * a*((a - 1) - (a + 1)*cos(w0))) / a0;
+	*b2 = (a*((a + 1) - (a - 1)*cos(w0) - 2.0*sqrt(a)*alpha)) / a0;
 }
 
-void Ate::trebleCoefficients(int intensity, double* b0, double* b1, double* b2, double* a0, double* a1)
+void Ate::trebleCoefficients(int intensity, double *b0, double *b1, double *b2, double *a1, double *a2)
 {
 	double frequency = 3300;
 	double qFactor = 0.5;
-	double gain = intensity;
+	double gain = intensity; 
 	double sampleRate = 44100;
 
-	double pi = 4.0*atan(1);
-	double a = pow(10.0, gain / 40);
-	double w0 = 2 * pi*frequency / sampleRate;
+	double pi = 4.0*atan(1); 
+	double a = pow(10.0, gain / 40); 
+	double w0 = 2 * pi*frequency / sampleRate; 
 	double alpha = sin(w0) / (2.0*qFactor);
 	double a0 = (a + 1) - (a - 1)*cos(w0) + 2.0*sqrt(a)*alpha;
 
-	*a1 = -(2.0*((a - 1) - (a + 1)*cos(w0))) / *a0;
-	*a2 = -((a + 1) - (a - 1)*cos(w0) - 2.0*sqrt(a)*alpha) / *a0;
-
-	*b0 = (a*((a + 1) + (a - 1)*cos(w0) + 2.0*sqrt(a)*alpha)) / *a0;
-	*b1 = (-2.0*a*((a - 1) + (a + 1)*cos(w0))) / *a0;
-	*b2 = (a*((a + 1) + (a - 1)*cos(w0) - 2.0*sqrt(a)*alpha)) / *a0;
+	*a1 = -(2.0*((a - 1) - (a + 1)*cos(w0))) / a0;
+	*a2 = -((a + 1) - (a - 1)*cos(w0) - 2.0*sqrt(a)*alpha) / a0;
+	*b0 = (a*((a + 1) + (a - 1)*cos(w0) + 2.0*sqrt(a)*alpha)) / a0;
+	*b1 = (-2.0*a*((a - 1) + (a + 1)*cos(w0))) / a0;
+	*b2 = (a*((a + 1) + (a - 1)*cos(w0) - 2.0*sqrt(a)*alpha)) / a0;
 }
 
 void Ate::usage()
@@ -167,59 +165,65 @@ void Ate::computeInput(int argc, char * argv[])
 		cout << "Not enough arguments for option: " << argv[1] << endl;
 		usage();
 	}
-	else if (string(argv[1]) == "-p") {
+	if (string(argv[1]) == "-p") {
 		long num = strtol(argv[2], &p, 10); //convert argv[2] to long for comparing reasons
 		if (num <= 8 && num >= 1) {
 			cout << "max threads: " << argv[2]; //test
-			// set max threads to argv[2]
-		}
-		else {
-			cout << num << " is not a valid argument for: " << argv[1] << endl;
-		}
-	}
-	else if (string(argv[1]) == "-b") {
-		long num = strtol(argv[2], &p, 10);
-		if (num <= 6 && num >= -6) {
-			cout << "bass is now: " << argv[2]; //test
-			//pass argv[2] to bass function
-		}
-		else {
-			cout << num << " is not a valid argument for: " << argv[1] << endl;
-		}
-	}
-	else if (string(argv[1]) == "-t") {
-		long num = strtol(argv[2], &p, 10);
-		if (num <= 6 && num >= -6) {
-			cout << "treble is now: " << argv[2]; //test
-			//pass argv[2] to treble function
+			maxThreads = strtol(argv[2], &p, 10); // set max threads to argv[2]
 		}
 		else {
 			cout << num << " is not a valid argument for: " << argv[1] << endl;
 		}
 	}
 	else {
-		string path = defaultPath;
-		path += string(argv[1]);
-		ifstream myAudio(path, ios::in | ios::binary);
-
-		if (checkFile(path)) {
-			
-			if (myAudio.peek() == EOF) {
-				cout << argv[1] << " Recognized as output file";
-			}
-			else {
-				cout << argv[1] << " Recognized as input file";
-
-				divideIntoBlocks();
-			}
-			myAudio.close();
+		cout << "Bad syntax" << endl;
+	}
+	if (string(argv[3]) == "-b") {
+		long num = strtol(argv[4], &p, 10);
+		if (num <= 6 && num >= -6) {
+			cout << "bass is now: " << argv[2]; //test
+			bass = strtol(argv[4], &p, 10); //pass argv[2] to bass function
 		}
 		else {
-			cout << argv[1] << " is not a valid option" << endl;
+			cout << num << " is not a valid argument for: " << argv[1] << endl;
 		}
 	}
-}
+	else {
+		cout << "Bad syntax" << endl;
+	}
+	if (string(argv[5]) == "-t") {
+		long num = strtol(argv[6], &p, 10);
+		if (num <= 6 && num >= -6) {
+			cout << "treble is now: " << argv[2]; //test
+			treble = strtol(argv[6], &p, 10); //pass argv[2] to treble function
+		}
+		else {
+			cout << num << " is not a valid argument for: " << argv[1] << endl;
+		}
+	}
+	else {
+		cout << "Bad syntax" << endl;
+	}
+	string path = defaultPath;
+	path += string(argv[7]);
+	ifstream myAudio(path, ios::in | ios::binary);
 
+	if (checkFile(path)) {
+		this->inputFile = path;
+	}
+	else {
+		cout << "Bad syntax" << endl;
+	}
+	path = defaultPath + argv[8];
+	if (checkFile(path)) {
+		this->outputFile = path;
+		divideIntoBlocks();
+	}
+	else {
+		cout << "Bad syntax" << endl;
+	}
+	myAudio.close();
+}
 
 
 void Ate::divideIntoBlocks()
@@ -266,31 +270,32 @@ DWORD WINAPI Ate::bassFilter(double* b0, double* b1, double* b2, double* a1, dou
 }
 
 
-DWORD WINAPI Ate::trebleFilter(double* b0, double* b1, double* b2, double* a0, double* a1)
+DWORD WINAPI trebleFilter(LPVOID info) //Zo kan de functie wel aangeroepen worden vanuit de thread
 {
 	unique_lock<mutex> lck(mtx, defer_lock);
 	//init size here
-	unsigned size = inputBlocks.size();
+	Ate *ate = reinterpret_cast<Ate*>(info);
+
+	unsigned size = ate->inputBlocks.size();
 
 	for (int i = 0; i < size; i++)
 	{
 		if (i == 0)
 		{
 			//als er nog geen data in de data vector zit, moet deze eerst aan de hand van onderstaande formule worden ingevoegd
-			data.push_back(*b0 * this->inputBlocks.at(i).getSample());
+			ate->data.push_back(*ate->b0 * ate->inputBlocks.at(i).getSample());
 		}
 		if (i == 1)
 		{
 			//als er maar 1 data element in de vector staat moet onderstaande formule worden toegepast
-			data.push_back(*b0 * this->inputBlocks.at(i).getSample() + *b1 * this->inputBlocks.at(i - 1).getSample() + *a1 * data[i - 1]);
+			ate->data.push_back(*ate->b0 * ate->inputBlocks.at(i).getSample() + *ate->b1 * ate->inputBlocks.at(i - 1).getSample() + *ate->a1 * ate->data[i - 1]);
 		}
 		else
 		{
 			//nu zijn er genoeg gegevens in de data vector om de volledige formule toe te passen
-			data.push_back(*b0 * this->inputBlocks.at(i).getSample() + *b1 * this->inputBlocks.at(i).getSample() + *b2 * this->inputBlocks.at(i - 2).getSample() + *a1 * data[i - 1] + *a2 * data[i - 2]);
+			ate->data.push_back(*ate->b0 * ate->inputBlocks.at(i).getSample() + *ate->b1 * ate->inputBlocks.at(i).getSample() + *ate->b2 * ate->inputBlocks.at(i - 2).getSample() + *ate->a1 * ate->data[i - 1] + *ate->a2 * ate->data[i - 2]);
 		}
-		this->inputBuff = move(data);
-		this->inputBlocks.at(i).setStatus(1);
+		ate->inputBuff = move(ate->data);
 	}
 	lck.unlock();
 	return 0;
@@ -318,7 +323,7 @@ void Ate::worker()
 	{
 		Coefficients args = { b0, b1, b2, a1, a2 };
 		CreateThread(0, 0, this->trebleFilter, &args, 0, NULL);
-		CreateThread(0, 0, this->bassFilter, &args, 0, NULL);
+		CreateThread(0, 0, this->bassFilter, &args, 0, NULL); //Bass filter moet nog aangepast worden, zie trebleFilter
 	}
 
 }
