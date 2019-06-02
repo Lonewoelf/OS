@@ -20,7 +20,7 @@ public:
 	void writeOutput();
 
 	unsigned short bassFilter(double*, double*, double*, double*, double* );
-	unsigned short trebleFilter(double*, double*, double*, double*, double*);
+	DWORD WINAPI trebleFilter(double*, double*, double*, double*, double*);
 
 	void computeInput(int argc, char *argv[]);
 	void divideIntoBlocks();

@@ -244,23 +244,23 @@ unsigned short Ate::bassFilter(double* b0, double* b1, double* b2, double* a0, d
 		if (i == 0)
 		{
 			//als er nog geen data in de data vector zit, moet deze eerst aan de hand van onderstaande formule worden ingevoegd
-			data.push_back(*b0 * inputBlocks[i]);
+			data.push_back(*b0 * this->inputBlocks.at(i).getSample());
 		}
 		if (i == 1)
 		{
 			//als er maar 1 data element in de vector staat moet onderstaande formule worden toegepast
-			data.push_back(*b0 * inputBlocks[i] + *b1 * this->inputBlocks[i - 1] + *a1 * data[i - 1]);
+			data.push_back(*b0 * this->inputBlocks.at(i).getSample() + *b1 * this->inputBlocks.at(i - 1).getSample() + *a1 * data[i - 1]);
 		}
 		else
 		{
 			//nu zijn er genoeg gegevens in de data vector om de volledige formule toe te passen
-			data.push_back(*b0 * this->inputBlocks[i] + *b1 * this->inputBlocks[i - 1] + *b2 * this->inputBlocks[i - 2] + *a1 * data[i - 1] + *a2 * data[i - 2]);
+			data.push_back(*b0 * this->inputBlocks.at(i).getSample() + *b1 * this->inputBlocks.at(i - 1).getSample() + *b2 * this->inputBlocks.at(i - 2).getSample() + *a1 * data[i - 1] + *a2 * data[i - 2]);
 		}
 		this->inputBuff = move(data);
 	}
 }
 
-unsigned short Ate::trebleFilter(double* b0, double* b1, double* b2, double* a0, double* a1)
+DWORD WINAPI Ate::trebleFilter(double* b0, double* b1, double* b2, double* a0, double* a1)
 {
 	//init size here
 	unsigned size = inputBlocks.size();
@@ -270,20 +270,21 @@ unsigned short Ate::trebleFilter(double* b0, double* b1, double* b2, double* a0,
 		if (i == 0)
 		{
 			//als er nog geen data in de data vector zit, moet deze eerst aan de hand van onderstaande formule worden ingevoegd
-			data.push_back(*b0 * inputBlocks[i]);
+			data.push_back(*b0 * this->inputBlocks.at(i).getSample());
 		}
 		if (i == 1)
 		{
 			//als er maar 1 data element in de vector staat moet onderstaande formule worden toegepast
-			data.push_back(*b0 * inputBlocks[i] + *b1 * this->inputBlocks[i - 1] + *a1 * data[i - 1]);
+			data.push_back(*b0 * this->inputBlocks.at(i).getSample() + *b1 * this->inputBlocks.at(i - 1).getSample() + *a1 * data[i - 1]);
 		}
 		else
 		{
 			//nu zijn er genoeg gegevens in de data vector om de volledige formule toe te passen
-			data.push_back(*b0 * this->inputBlocks[i] + *b1 * this->inputBlocks[i - 1] + *b2 * this->inputBlocks[i - 2] + *a1 * data[i - 1] + *a2 * data[i - 2]);
+			data.push_back(*b0 * this->inputBlocks.at(i).getSample() + *b1 * this->inputBlocks.at(i).getSample() + *b2 * this->inputBlocks.at(i - 2).getSample() + *a1 * data[i - 1] + *a2 * data[i - 2]);
 		}
 		this->inputBuff = move(data);
 	}
+	return 0;
 }
 
 void Ate::writeOutput()
@@ -304,7 +305,7 @@ void Ate::worker()
 	for (int i = 0; i < maxThreads; i++)
 	{
 		Coefficients args = { b0, b1, b2, a1, a2 };
-		CreateThread(NULL, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(trebleFilter), &args, 0, NULL);
+		CreateThread(0, 0, this->trebleFilter, &args, 0, NULL);
 	}
 	for (int i = 0; i < maxThreads; i++)
 	{

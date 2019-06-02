@@ -5,6 +5,8 @@ public:
 	Block(signed short inputBuff, int id);
 	virtual ~Block();
 
+	signed short getSample();
+
 	friend std::ostream &operator << (std::ostream &out, Block *b);
 
 private:
