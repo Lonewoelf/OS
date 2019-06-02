@@ -233,9 +233,9 @@ void Ate::divideIntoBlocks()
 	myAudio.close();
 }
 
-
-unsigned short Ate::bassFilter(double* b0, double* b1, double* b2, double* a0, double* a1)
+void Ate::bassFilter(double* b0, double* b1, double* b2, double* a1, double* a2)
 {
+	
 	//init size here
 	unsigned size = inputBlocks.size();
 	
@@ -260,6 +260,7 @@ unsigned short Ate::bassFilter(double* b0, double* b1, double* b2, double* a0, d
 	}
 }
 
+<<<<<<< HEAD
 DWORD WINAPI Ate::trebleFilter(double* b0, double* b1, double* b2, double* a0, double* a1)
 {
 	//init size here
@@ -285,6 +286,10 @@ DWORD WINAPI Ate::trebleFilter(double* b0, double* b1, double* b2, double* a0, d
 		this->inputBuff = move(data);
 	}
 	return 0;
+=======
+void Ate::trebleFilter(double* b0, double* b1, double* b2, double* a1, double* a2)
+{
+>>>>>>> 6399b1cef5166f7bcf51ba658dcb64ad02ebb742
 }
 
 void Ate::writeOutput()
@@ -301,19 +306,18 @@ void Ate::writeOutput()
 
 void Ate::worker()
 {
-	thread *paThread[8];
-	for (int i = 0; i < maxThreads; i++)
+	for (int i = 0; i < getMaxThread(); i++)
 	{
 		Coefficients args = { b0, b1, b2, a1, a2 };
+<<<<<<< HEAD
 		CreateThread(0, 0, this->trebleFilter, &args, 0, NULL);
 	}
 	for (int i = 0; i < maxThreads; i++)
 	{
 		paThread[i]->join();
+=======
+		CreateThread(NULL, 0, this->bassFilter, &args, 0, NULL);
+		CreateThread(NULL, 0, this->trebleFilter, &args, 0, NULL);
+>>>>>>> 6399b1cef5166f7bcf51ba658dcb64ad02ebb742
 	}
-	for (int i = 0; i < maxThreads; i++)
-	{
-		delete paThread[i];
-	}
-
 }
