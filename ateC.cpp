@@ -233,9 +233,9 @@ void Ate::divideIntoBlocks()
 	myAudio.close();
 }
 
-
-unsigned short Ate::bassFilter(double* b0, double* b1, double* b2, double* a0, double* a1)
+void Ate::bassFilter(LPVOID pArgs)
 {
+	Coefficients *pArgs = (Coefficients*)pArgs;
 	//init size here
 	unsigned size = inputBlocks.size();
 	
@@ -260,8 +260,9 @@ unsigned short Ate::bassFilter(double* b0, double* b1, double* b2, double* a0, d
 	}
 }
 
-unsigned short Ate::trebleFilter(double* b0, double* b1, double* b2, double* a0, double* a1)
+void Ate::trebleFilter(LPVOID pArgs)
 {
+	Coefficients *pArgs = (Coefficients*)pArgs;
 	//init size here
 	unsigned size = inputBlocks.size();
 
@@ -300,19 +301,12 @@ void Ate::writeOutput()
 
 void Ate::worker()
 {
-	thread *paThread[8];
 	for (int i = 0; i < maxThreads; i++)
 	{
 		Coefficients args = { b0, b1, b2, a1, a2 };
-		CreateThread(NULL, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(trebleFilter), &args, 0, NULL);
+		CreateThread(NULL, 0, this->bassFilter, &args, 0, NULL);
+		CreateThread(NULL, 0, this->trebleFilter, &args, 0, NULL);
 	}
-	for (int i = 0; i < maxThreads; i++)
-	{
-		paThread[i]->join();
-	}
-	for (int i = 0; i < maxThreads; i++)
-	{
-		delete paThread[i];
-	}
+	
 
 }

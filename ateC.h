@@ -19,8 +19,8 @@ public:
 	void setOutputFile(string path);
 	void writeOutput();
 
-	unsigned short bassFilter(double*, double*, double*, double*, double* );
-	unsigned short trebleFilter(double*, double*, double*, double*, double*);
+	void bassFilter(LPVOID);
+	void trebleFilter(LPVOID);
 
 	void computeInput(int argc, char *argv[]);
 	void divideIntoBlocks();
