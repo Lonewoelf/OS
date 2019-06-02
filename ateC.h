@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "block.h"
 using namespace std;
 
 class Ate {
@@ -12,6 +13,7 @@ public:
 
 	void setMaxThread(int amount);
 	void setTreble(int treble);
+	int  getMaxThread();
 	void setBass(int bass);
 	void setInputFile(string path);
 	void setOutputFile(string path);
@@ -28,6 +30,7 @@ private:
 	string inputFile, outputFile;
 	signed short Blocks[1000];
 	vector<signed short> inputBuff;
+	vector<Block> inputBlocks;
 	vector<int16_t> data;
 	signed short sample;
 	double *b0, *b1, *b2;

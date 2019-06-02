@@ -2,6 +2,7 @@
 #include <math.h>
 #include <fstream>
 #include <vector>
+#include <thread>
 #include "semaphore.h"
 #include "ateC.h"
 
@@ -100,6 +101,11 @@ void Ate::setMaxThread(int amount)
 	this->maxThreads = amount;
 }
 
+int Ate::getMaxThread()
+{
+	return this->maxThreads;
+}
+
 void Ate::setTreble(int treble)
 {
 	this->treble = treble;
@@ -195,6 +201,7 @@ void Ate::computeInput(int argc, char * argv[])
 			}
 			else {
 				cout << argv[1] << " Recognized as input file";
+
 				divideIntoBlocks();
 			}
 			myAudio.close();
@@ -210,11 +217,12 @@ void Ate::computeInput(int argc, char * argv[])
 void Ate::divideIntoBlocks()
 {
 	ifstream myAudio(this->inputFile, ios::in | ios::binary);
-
-
+	int i = 0;
 
 	while (myAudio.read((char*)& sample, sizeof(signed short))) {
-		inputBuff.push_back(sample);
+		Block b(sample, i);
+		inputBlocks.push_back(b);
+		i++;
 	}
 	myAudio.close();
 }
@@ -224,7 +232,7 @@ unsigned short Ate::biquad(double* b0, double* b1, double* b2, double* a0, doubl
 {
 	//init size here
 	unsigned size = inputBuff.size();
-	vector<int16_t> data;
+	
 	for (int i = 0; i < size; i++)
 	{
 		if (i == 0)
@@ -260,5 +268,18 @@ void Ate::writeOutput()
 
 void Ate::worker()
 {
+	thread *paThread[8];
+	for (int i = 0; i < maxThreads; i++)
+	{
+		paThread[i] = new thread(/* ROEP HIER FUNCTIES AAN*/);
+	}
+	for (int i = 0; i < maxThreads; i++)
+	{
+		paThread[i]->join();
+	}
+	for (int i = 0; i < maxThreads; i++)
+	{
+		delete paThread[i];
+	}
 
 }

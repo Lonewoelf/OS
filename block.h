@@ -2,12 +2,12 @@
 
 class Block {
 public:
-	Block(const char *name, int number);
+	Block(signed short inputBuff, int id);
 	virtual ~Block();
 
 	friend std::ostream &operator << (std::ostream &out, Block *b);
 
 private:
-	const char *name;
-	int number;
+	signed short inputBuff;
+	int id;
 };
