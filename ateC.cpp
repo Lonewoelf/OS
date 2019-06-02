@@ -233,7 +233,7 @@ void Ate::divideIntoBlocks()
 	myAudio.close();
 }
 
-void Ate::bassFilter(double* b0, double* b1, double* b2, double* a1, double* a2)
+DWORD WINAPI Ate::bassFilter(double* b0, double* b1, double* b2, double* a1, double* a2)
 {
 	
 	//init size here
@@ -260,7 +260,7 @@ void Ate::bassFilter(double* b0, double* b1, double* b2, double* a1, double* a2)
 	}
 }
 
-<<<<<<< HEAD
+
 DWORD WINAPI Ate::trebleFilter(double* b0, double* b1, double* b2, double* a0, double* a1)
 {
 	//init size here
@@ -284,12 +284,9 @@ DWORD WINAPI Ate::trebleFilter(double* b0, double* b1, double* b2, double* a0, d
 			data.push_back(*b0 * this->inputBlocks.at(i).getSample() + *b1 * this->inputBlocks.at(i).getSample() + *b2 * this->inputBlocks.at(i - 2).getSample() + *a1 * data[i - 1] + *a2 * data[i - 2]);
 		}
 		this->inputBuff = move(data);
+		this->inputBlocks.at(i).setStatus(1);
 	}
 	return 0;
-=======
-void Ate::trebleFilter(double* b0, double* b1, double* b2, double* a1, double* a2)
-{
->>>>>>> 6399b1cef5166f7bcf51ba658dcb64ad02ebb742
 }
 
 void Ate::writeOutput()
@@ -309,15 +306,8 @@ void Ate::worker()
 	for (int i = 0; i < getMaxThread(); i++)
 	{
 		Coefficients args = { b0, b1, b2, a1, a2 };
-<<<<<<< HEAD
 		CreateThread(0, 0, this->trebleFilter, &args, 0, NULL);
+		CreateThread(0, 0, this->bassFilter, &args, 0, NULL);
 	}
-	for (int i = 0; i < maxThreads; i++)
-	{
-		paThread[i]->join();
-=======
-		CreateThread(NULL, 0, this->bassFilter, &args, 0, NULL);
-		CreateThread(NULL, 0, this->trebleFilter, &args, 0, NULL);
->>>>>>> 6399b1cef5166f7bcf51ba658dcb64ad02ebb742
-	}
+
 }

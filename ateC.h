@@ -19,13 +19,12 @@ public:
 	void setOutputFile(string path);
 	void writeOutput();
 
-<<<<<<< HEAD
-	unsigned short bassFilter(double*, double*, double*, double*, double* );
+	DWORD WINAPI bassFilter(double*, double*, double*, double*, double* );
 	DWORD WINAPI trebleFilter(double*, double*, double*, double*, double*);
-=======
+
 	void bassFilter(double*, double*, double*, double*, double*);
 	void trebleFilter(double*, double*, double*, double*, double*);
->>>>>>> 6399b1cef5166f7bcf51ba658dcb64ad02ebb742
+
 
 	void computeInput(int argc, char *argv[]);
 	void divideIntoBlocks();
