@@ -3,10 +3,11 @@
 #include <fstream>
 #include <vector>
 #include <thread>
-#include "semaphore.h"
-#include "ateC.h"
-#include <Windows.h>
 #include <mutex>
+
+#include <Windows.h>
+#include "ateC.h"
+
 
 using namespace std;
 
