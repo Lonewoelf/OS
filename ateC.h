@@ -19,7 +19,8 @@ public:
 	void setOutputFile(string path);
 	void writeOutput();
 
-	unsigned short biquad(double*, double*, double*, double*, double*);
+	unsigned short bassFilter(double*, double*, double*, double*, double* );
+	unsigned short trebleFilter(double*, double*, double*, double*, double*);
 
 	void computeInput(int argc, char *argv[]);
 	void divideIntoBlocks();
@@ -34,7 +35,5 @@ private:
 	vector<int16_t> data;
 	signed short sample;
 	double *b0, *b1, *b2;
-	double *a1, *a2;
-
-	
+	double *a1, *a2;	
 };
