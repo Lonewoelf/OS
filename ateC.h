@@ -33,7 +33,7 @@ private:
 	signed short Blocks[1000];
 	vector<signed short> inputBuff;
 	vector<Block> inputBlocks;
-	vector<int16_t> data;
+	vector<signed short> data;
 	signed short sample;
 	double *b0, *b1, *b2;
 	double *a1, *a2;	

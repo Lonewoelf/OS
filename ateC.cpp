@@ -13,7 +13,7 @@
 
 using namespace std;
 
-string defaultPath = "C:\\Users\\Madita\\Documents\\";
+string defaultPath = "C:\\Users\\2125228\\Documents\\GitHub\\OS\\";
 mutex mtx;
 
 Ate::Ate()
@@ -179,7 +179,7 @@ void Ate::computeInput(int argc, char * argv[])
 		}
 	}
 	else {
-		cout << "Bad syntax" << endl;
+		cout << "Bad syntax 1" << endl;
 	}
 	if (string(argv[3]) == "-b") {
 		long num = strtol(argv[4], &p, 10);
@@ -192,7 +192,7 @@ void Ate::computeInput(int argc, char * argv[])
 		}
 	}
 	else {
-		cout << "Bad syntax" << endl;
+		cout << "Bad syntax 2" << endl;
 	}
 	if (string(argv[5]) == "-t") {
 		long num = strtol(argv[6], &p, 10);
@@ -205,7 +205,7 @@ void Ate::computeInput(int argc, char * argv[])
 		}
 	}
 	else {
-		cout << "Bad syntax" << endl;
+		cout << "Bad syntax 3" << endl;
 	}
 	string path = defaultPath;
 	path += string(argv[7]);
@@ -215,7 +215,7 @@ void Ate::computeInput(int argc, char * argv[])
 		this->inputFile = path;
 	}
 	else {
-		cout << "Bad syntax" << endl;
+		cout << "Bad syntax 4" << endl;
 	}
 	path = defaultPath + argv[8];
 	if (checkFile(path)) {
@@ -223,7 +223,7 @@ void Ate::computeInput(int argc, char * argv[])
 		divideIntoBlocks();
 	}
 	else {
-		cout << "Bad syntax" << endl;
+		cout << "Bad syntax 5" << endl;
 	}
 	myAudio.close();
 }
@@ -246,7 +246,7 @@ void Ate::divideIntoBlocks()
 		data.push_back(inputBlocks.at(i).getSample());
 	}
 	this->inputBuff = move(this->data);
-
+	this->bassFilter();
 	this->writeOutput();
 }
 
@@ -257,9 +257,10 @@ DWORD WINAPI Ate::bassFilter(LPVOID info)
 	Ate *ate = reinterpret_cast<Ate*>(info);
 
 	unsigned size = ate->inputBlocks.size();
-
+	cout << size << endl;
 	for (int i = 0; i < size; i++)
 	{
+
 		if (i == 0)
 		{
 			//als er nog geen data in de data vector zit, moet deze eerst aan de hand van onderstaande formule worden ingevoegd
