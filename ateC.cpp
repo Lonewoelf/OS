@@ -35,7 +35,7 @@ struct Coefficients
 	double* b0; double* b1; double* b2; double* a1; double* a2;
 };
 
-void Ate::bassCoefficients(int intensity, double *b0, double *b1, double *b2, double *a1, double *a2)
+void Ate::bassCoefficients(int intensity)
 {
 	double frequency = 330;
 	double qFactor = 0.5; 
@@ -55,7 +55,7 @@ void Ate::bassCoefficients(int intensity, double *b0, double *b1, double *b2, do
 	bassb2 = (a*((a + 1) - (a - 1)*cos(w0) - 2.0*sqrt(a)*alpha)) / a0;
 }
 
-void Ate::trebleCoefficients(int intensity, double *b0, double *b1, double *b2, double *a1, double *a2)
+void Ate::trebleCoefficients(int intensity)
 {
 	double frequency = 3300;
 	double qFactor = 0.5;
@@ -118,11 +118,13 @@ int Ate::getMaxThread()
 void Ate::setTreble(int treble)
 {
 	this->treble = treble;
+	trebleCoefficients(this->treble);
 }
 
 void Ate::setBass(int bass)
 {
 	this->bass = bass;
+	bassCoefficients(this->bass);
 }
 
 void Ate::setInputFile(string path)
