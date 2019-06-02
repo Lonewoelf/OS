@@ -20,8 +20,8 @@ public:
 	void setOutputFile(string path);
 	void writeOutput();
 
-	static DWORD WINAPI bassFilter(LPVOID);
-	static DWORD WINAPI trebleFilter(LPVOID);
+	void bassFilter(vector<signed short> inputBlock, vector<signed short>* outputBlock);
+	void trebleFilter(vector<signed short> inputBlock, vector<signed short>* outputBlock);
 
 	void computeInput(int argc, char *argv[]);
 	void divideIntoBlocks();
@@ -35,6 +35,6 @@ private:
 	vector<Block> inputBlocks;
 	vector<signed short> data;
 	signed short sample;
-	double *b0, *b1, *b2;
-	double *a1, *a2;	
+	double *bassb0, *bassb1, *bassb2, *bassa1, *bassa2;
+	double *trebleb0, *trebleb1, *trebleb2, *treblea1, *treblea2;	
 };

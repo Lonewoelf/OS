@@ -12,7 +12,7 @@
 
 
 using namespace std;
-
+//string defaultPath = "C:\\Users\\Madita\\Documents\\";
 string defaultPath = "C:\\Users\\2125228\\Documents\\GitHub\\OS\\";
 mutex mtx;
 
@@ -246,72 +246,37 @@ void Ate::divideIntoBlocks()
 		data.push_back(inputBlocks.at(i).getSample());
 	}
 	this->inputBuff = move(this->data);
-	this->bassFilter();
 	this->writeOutput();
 }
 
-DWORD WINAPI Ate::bassFilter(LPVOID info)
-{
-	unique_lock<mutex> lck(mtx, defer_lock);
-	//init size here
-	Ate *ate = reinterpret_cast<Ate*>(info);
 
-	unsigned size = ate->inputBlocks.size();
-	cout << size << endl;
+
+void Ate::trebleFilter(vector<signed short> inputBlock, vector<signed short>* outputBlock) //Zo kan de functie wel aangeroepen worden vanuit de thread
+{
+	int size = inputBlock.size();
 	for (int i = 0; i < size; i++)
 	{
-
-		if (i == 0)
+		signed short sample = 0;
+		if (i != 1 && i != 0)
 		{
-			//als er nog geen data in de data vector zit, moet deze eerst aan de hand van onderstaande formule worden ingevoegd
-			ate->data.push_back(*ate->b0 * ate->inputBlocks.at(i).getSample());
+			sample = *trebleb0 * inputBlock.at(i) + *trebleb1 * inputBlock.at(i - 1) + *trebleb2 * inputBlock.at(i - 2) + *treblea1 * outputBlock->at(i - 1) + *treblea2 * outputBlock->at(i - 2);
 		}
-		if (i == 1)
-		{
-			//als er maar 1 data element in de vector staat moet onderstaande formule worden toegepast
-			ate->data.push_back(*ate->b0 * ate->inputBlocks.at(i).getSample() + *ate->b1 * ate->inputBlocks.at(i - 1).getSample() + *ate->a1 * ate->data[i - 1]);
-		}
-		else
-		{
-			//nu zijn er genoeg gegevens in de data vector om de volledige formule toe te passen
-			ate->data.push_back(*ate->b0 * ate->inputBlocks.at(i).getSample() + *ate->b1 * ate->inputBlocks.at(i).getSample() + *ate->b2 * ate->inputBlocks.at(i - 2).getSample() + *ate->a1 * ate->data[i - 1] + *ate->a2 * ate->data[i - 2]);
-		}
-		ate->inputBuff = move(ate->data);
+		outputBlock->push_back(sample);
 	}
-	lck.unlock();
-	return 0;
 }
 
-
-DWORD WINAPI Ate::trebleFilter(LPVOID info) //Zo kan de functie wel aangeroepen worden vanuit de thread
+void Ate::bassFilter(vector<signed short> inputBlock, vector<signed short>* outputBlock) //Zo kan de functie wel aangeroepen worden vanuit de thread
 {
-	unique_lock<mutex> lck(mtx, defer_lock);
-	//init size here
-	Ate *ate = reinterpret_cast<Ate*>(info);
-
-	unsigned size = ate->inputBlocks.size();
-
+	int size = inputBlock.size();
 	for (int i = 0; i < size; i++)
 	{
-		if (i == 0)
+		signed short sample = 0;
+		if (i != 1 && i != 0)
 		{
-			//als er nog geen data in de data vector zit, moet deze eerst aan de hand van onderstaande formule worden ingevoegd
-			ate->data.push_back(*ate->b0 * ate->inputBlocks.at(i).getSample());
+			sample = *bassb0 * inputBlock.at(i) + *bassb1 * inputBlock.at(i - 1) + *bassb2 * inputBlock.at(i - 2) + *bassa1 * outputBlock->at(i - 1) + *bassa2 * outputBlock->at(i - 2);
 		}
-		if (i == 1)
-		{
-			//als er maar 1 data element in de vector staat moet onderstaande formule worden toegepast
-			ate->data.push_back(*ate->b0 * ate->inputBlocks.at(i).getSample() + *ate->b1 * ate->inputBlocks.at(i - 1).getSample() + *ate->a1 * ate->data[i - 1]);
-		}
-		else
-		{
-			//nu zijn er genoeg gegevens in de data vector om de volledige formule toe te passen
-			ate->data.push_back(*ate->b0 * ate->inputBlocks.at(i).getSample() + *ate->b1 * ate->inputBlocks.at(i).getSample() + *ate->b2 * ate->inputBlocks.at(i - 2).getSample() + *ate->a1 * ate->data[i - 1] + *ate->a2 * ate->data[i - 2]);
-		}
-		ate->inputBuff = move(ate->data);
+		outputBlock->push_back(sample);
 	}
-	lck.unlock();
-	return 0;
 }
 
 void Ate::writeOutput()
