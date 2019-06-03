@@ -253,25 +253,27 @@ void Ate::divideIntoBlocks()
 
 void Ate::trebleFilter() //Zo kan de functie wel aangeroepen worden vanuit de thread
 {
+	cout << "begin treble filter" << endl;
 	int size = inputBuff.size();
 	for (int i = 0; i < size; i++)
 	{
 		signed short sample = 0;
 		if (i != 1 && i != 0)
 		{
+			
 			sample = trebleb0 * inputBuff.at(i) + trebleb1 * inputBuff.at(i - 1) + trebleb2 * inputBuff.at(i - 2) + treblea1 * outputBlock.at(i - 1) + treblea2 * outputBlock.at(i - 2);
-			outputBlock.push_back(sample);
 		}
-		else
-		{
-			outputBlock.push_back(sample);
-		}
+		outputBlock.push_back(sample);
 	}
+	cout << "éinde treble filter" << endl;
 }
 
 void Ate::bassFilter() //Zo kan de functie wel aangeroepen worden vanuit de thread
 {
-	int size = inputBuff.size();
+	cout << "begin bass filter " << endl;
+	int size = outputBlock.size();
+	inputBuff = outputBlock;
+	outputBlock.clear();
 	for (int i = 0; i < size; i++)
 	{
 		signed short sample = 0;
@@ -280,8 +282,8 @@ void Ate::bassFilter() //Zo kan de functie wel aangeroepen worden vanuit de thre
 			sample = bassb0 * inputBuff.at(i) + bassb1 * inputBuff.at(i - 1) + bassb2 * inputBuff.at(i - 2) + bassa1 * outputBlock.at(i - 1) + bassa2 * outputBlock.at(i - 2);
 		}
 		outputBlock.push_back(sample);
-		
 	}
+	cout << "einde bass filter" << endl;
 }
 
 void Ate::writeOutput()
@@ -292,7 +294,7 @@ void Ate::writeOutput()
 	if (outputFile.is_open())
 	{
 		cout << "File is opened" << endl;
-		outputFile.write((char*)&inputBuff[0], this->inputBuff.size() * sizeof(signed short));
+		outputFile.write((char*)&outputBlock[0], this->outputBlock.size() * sizeof(signed short));
 	}
 	else
 	{
@@ -302,12 +304,9 @@ void Ate::writeOutput()
 
 void Ate::worker()
 {
-	for (int i = 0; i < inputBuff.size(); i++)
-	{
-		cout << i << endl;
-		trebleFilter();
-		bassFilter();
-	}
+	trebleFilter();
+	bassFilter();
+
 	cout << "Hij gaat nu schrijven" << endl;
 	writeOutput();
 }
