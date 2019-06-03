@@ -22,10 +22,10 @@ public:
 
 	void bassFilter();
 	void trebleFilter();
+	void worker();
 
 	void computeInput(int argc, char *argv[]);
 	void divideIntoBlocks();
-	void worker();
 
 private:
 	int maxThreads, treble, bass;
@@ -37,5 +37,6 @@ private:
 	vector<signed short> data;
 	signed short sample;
 	double bassb0, bassb1, bassb2, bassa1, bassa2;
-	double trebleb0, trebleb1, trebleb2, treblea1, treblea2;	
+	double trebleb0, trebleb1, trebleb2, treblea1, treblea2;
+	int check;
 };

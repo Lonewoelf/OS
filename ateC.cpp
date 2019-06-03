@@ -256,6 +256,10 @@ void Ate::divideIntoBlocks()
 void Ate::trebleFilter() //Zo kan de functie wel aangeroepen worden vanuit de thread
 {
 	cout << "begin treble filter" << endl;
+	if (check == 2) {
+		inputBuff = outputBlock;
+		outputBlock.clear();
+	}
 	int size = inputBuff.size();
 	for (int i = 0; i < size; i++)
 	{
@@ -268,13 +272,18 @@ void Ate::trebleFilter() //Zo kan de functie wel aangeroepen worden vanuit de th
 		outputBlock.push_back(sample);
 	}
 	cout << "einde treble filter" << endl;
+	check = 1;
 }
 
 void Ate::bassFilter() //Zo kan de functie wel aangeroepen worden vanuit de thread
 {
 	cout << "begin bass filter " << endl;
-	inputBuff = outputBlock;
-	outputBlock.clear();
+
+	if (check == 1) {
+		inputBuff = outputBlock;
+		outputBlock.clear();
+	}
+
 	int size = inputBuff.size();
 	for (int i = 0; i < size; i++)
 	{
@@ -286,6 +295,7 @@ void Ate::bassFilter() //Zo kan de functie wel aangeroepen worden vanuit de thre
 		outputBlock.push_back(sample);
 	}
 	cout << "einde bass filter" << endl;
+	check = 2;
 }
 
 void Ate::writeOutput()
@@ -306,8 +316,23 @@ void Ate::writeOutput()
 
 void Ate::worker()
 {
-	trebleFilter();
-	bassFilter();
-	cout << "Hij gaat nu schrijven" << endl;
+	thread *trebleThread[8];
+	thread *bassThread[8];
+
+	for (int i = 0; i < getMaxThread(); i++)
+	{
+		trebleThread[i] = new thread(&Ate::trebleFilter, this);
+		bassThread[i] = new thread(&Ate::bassFilter, this);
+	}
+	for (int i = 0; i < getMaxThread(); i++)
+	{
+		trebleThread[i]->join();
+		bassThread[i]->join();
+	}
+	for (int i = 0; i < getMaxThread(); i++)
+	{
+		delete trebleThread[i];
+		delete bassThread[i];
+	}
 	writeOutput();
 }
