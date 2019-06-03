@@ -188,6 +188,7 @@ void Ate::computeInput(int argc, char * argv[])
 		if (num <= 6 && num >= -6) {
 			cout << "bass is now: " << argv[4] << endl; //test
 			bass = strtol(argv[4], &p, 10); //pass argv[2] to bass function
+			bassCoefficients(bass);
 		}
 		else {
 			cout << num << " is not a valid argument for: " << argv[1] << endl;
@@ -201,6 +202,7 @@ void Ate::computeInput(int argc, char * argv[])
 		if (num <= 6 && num >= -6) {
 			cout << "treble is now: " << argv[6] << endl; //test
 			treble = strtol(argv[6], &p, 10); //pass argv[2] to treble function
+			trebleCoefficients(treble);
 		}
 		else {
 			cout << num << " is not a valid argument for: " << argv[1] << endl;
@@ -258,26 +260,26 @@ void Ate::trebleFilter() //Zo kan de functie wel aangeroepen worden vanuit de th
 	for (int i = 0; i < size; i++)
 	{
 		signed short sample = 0;
-		if (i != 1 && i != 0)
+		if (i >= 2)
 		{
 			
 			sample = trebleb0 * inputBuff.at(i) + trebleb1 * inputBuff.at(i - 1) + trebleb2 * inputBuff.at(i - 2) + treblea1 * outputBlock.at(i - 1) + treblea2 * outputBlock.at(i - 2);
 		}
 		outputBlock.push_back(sample);
 	}
-	cout << "éinde treble filter" << endl;
+	cout << "einde treble filter" << endl;
 }
 
 void Ate::bassFilter() //Zo kan de functie wel aangeroepen worden vanuit de thread
 {
 	cout << "begin bass filter " << endl;
-	int size = outputBlock.size();
 	inputBuff = outputBlock;
 	outputBlock.clear();
+	int size = inputBuff.size();
 	for (int i = 0; i < size; i++)
 	{
 		signed short sample = 0;
-		if (i != 1 && i != 0)
+		if (i >= 2)
 		{
 			sample = bassb0 * inputBuff.at(i) + bassb1 * inputBuff.at(i - 1) + bassb2 * inputBuff.at(i - 2) + bassa1 * outputBlock.at(i - 1) + bassa2 * outputBlock.at(i - 2);
 		}
@@ -288,7 +290,7 @@ void Ate::bassFilter() //Zo kan de functie wel aangeroepen worden vanuit de thre
 
 void Ate::writeOutput()
 {
-	cout << "writeOutput" << endl;
+	cout << "write output" << endl;
 	ofstream outputFile;
 	outputFile.open(this->outputFile, ios::out | ios::binary);
 	if (outputFile.is_open())
@@ -306,7 +308,6 @@ void Ate::worker()
 {
 	trebleFilter();
 	bassFilter();
-
 	cout << "Hij gaat nu schrijven" << endl;
 	writeOutput();
 }
