@@ -32,7 +32,7 @@ private:
 	string inputFile, outputFile;
 	signed short Blocks[1000];
 	vector<signed short> inputBuff;
-	vector<signed short>* outputBlock;
+	vector<signed short> outputBlock;
 	vector<Block> inputBlocks;
 	vector<signed short> data;
 	signed short sample;

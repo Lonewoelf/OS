@@ -248,7 +248,7 @@ void Ate::divideIntoBlocks()
 		data.push_back(inputBlocks.at(i).getSample());
 	}
 	this->inputBuff = move(this->data);
-	this->writeOutput();
+	worker();
 }
 
 void Ate::trebleFilter() //Zo kan de functie wel aangeroepen worden vanuit de thread
@@ -259,9 +259,13 @@ void Ate::trebleFilter() //Zo kan de functie wel aangeroepen worden vanuit de th
 		signed short sample = 0;
 		if (i != 1 && i != 0)
 		{
-			sample = trebleb0 * inputBuff.at(i) + trebleb1 * inputBuff.at(i - 1) + trebleb2 * inputBuff.at(i - 2) + treblea1 * outputBlock->at(i - 1) + treblea2 * outputBlock->at(i - 2);
+			sample = trebleb0 * inputBuff.at(i) + trebleb1 * inputBuff.at(i - 1) + trebleb2 * inputBuff.at(i - 2) + treblea1 * outputBlock.at(i - 1) + treblea2 * outputBlock.at(i - 2);
+			outputBlock.push_back(sample);
 		}
-		outputBlock->push_back(sample);
+		else
+		{
+			outputBlock.push_back(sample);
+		}
 	}
 }
 
@@ -273,9 +277,10 @@ void Ate::bassFilter() //Zo kan de functie wel aangeroepen worden vanuit de thre
 		signed short sample = 0;
 		if (i != 1 && i != 0)
 		{
-			sample = bassb0 * inputBuff.at(i) + bassb1 * inputBuff.at(i - 1) + bassb2 * inputBuff.at(i - 2) + bassa1 * outputBlock->at(i - 1) + bassa2 * outputBlock->at(i - 2);
+			sample = bassb0 * inputBuff.at(i) + bassb1 * inputBuff.at(i - 1) + bassb2 * inputBuff.at(i - 2) + bassa1 * outputBlock.at(i - 1) + bassa2 * outputBlock.at(i - 2);
 		}
-		outputBlock->push_back(sample);
+		outputBlock.push_back(sample);
+		
 	}
 }
 
@@ -297,8 +302,12 @@ void Ate::writeOutput()
 
 void Ate::worker()
 {
-	for (int i = 0; i < getMaxThread(); i++)
+	for (int i = 0; i < inputBuff.size(); i++)
 	{
-		writeOutput();
+		cout << i << endl;
+		trebleFilter();
+		bassFilter();
 	}
+	cout << "Hij gaat nu schrijven" << endl;
+	writeOutput();
 }
