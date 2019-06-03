@@ -299,9 +299,6 @@ void Ate::worker()
 {
 	for (int i = 0; i < getMaxThread(); i++)
 	{
-		//Coefficients args = { b0, b1, b2, a1, a2 };
-		//CreateThread(0, 0, trebleFilter, &args, 0, NULL);
-		//CreateThread(0, 0, bassFilter, &args, 0, NULL); //Bass filter moet nog aangepast worden, zie trebleFilter
 		writeOutput();
 	}
 }
