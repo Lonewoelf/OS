@@ -251,29 +251,29 @@ void Ate::divideIntoBlocks()
 	this->writeOutput();
 }
 
-void Ate::trebleFilter(vector<signed short> inputBlock, vector<signed short>* outputBlock) //Zo kan de functie wel aangeroepen worden vanuit de thread
+void Ate::trebleFilter() //Zo kan de functie wel aangeroepen worden vanuit de thread
 {
-	int size = inputBlock.size();
+	int size = inputBuff.size();
 	for (int i = 0; i < size; i++)
 	{
 		signed short sample = 0;
 		if (i != 1 && i != 0)
 		{
-			sample = trebleb0 * inputBlock.at(i) + trebleb1 * inputBlock.at(i - 1) + trebleb2 * inputBlock.at(i - 2) + treblea1 * outputBlock->at(i - 1) + treblea2 * outputBlock->at(i - 2);
+			sample = trebleb0 * inputBuff.at(i) + trebleb1 * inputBuff.at(i - 1) + trebleb2 * inputBuff.at(i - 2) + treblea1 * outputBlock->at(i - 1) + treblea2 * outputBlock->at(i - 2);
 		}
 		outputBlock->push_back(sample);
 	}
 }
 
-void Ate::bassFilter(vector<signed short> inputBlock, vector<signed short>* outputBlock) //Zo kan de functie wel aangeroepen worden vanuit de thread
+void Ate::bassFilter() //Zo kan de functie wel aangeroepen worden vanuit de thread
 {
-	int size = inputBlock.size();
+	int size = inputBuff.size();
 	for (int i = 0; i < size; i++)
 	{
 		signed short sample = 0;
 		if (i != 1 && i != 0)
 		{
-			sample = bassb0 * inputBlock.at(i) + bassb1 * inputBlock.at(i - 1) + bassb2 * inputBlock.at(i - 2) + bassa1 * outputBlock->at(i - 1) + bassa2 * outputBlock->at(i - 2);
+			sample = bassb0 * inputBuff.at(i) + bassb1 * inputBuff.at(i - 1) + bassb2 * inputBuff.at(i - 2) + bassa1 * outputBlock->at(i - 1) + bassa2 * outputBlock->at(i - 2);
 		}
 		outputBlock->push_back(sample);
 	}

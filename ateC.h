@@ -20,8 +20,8 @@ public:
 	void setOutputFile(string path);
 	void writeOutput();
 
-	void bassFilter(vector<signed short> inputBlock, vector<signed short>* outputBlock);
-	void trebleFilter(vector<signed short> inputBlock, vector<signed short>* outputBlock);
+	void bassFilter();
+	void trebleFilter();
 
 	void computeInput(int argc, char *argv[]);
 	void divideIntoBlocks();
@@ -32,6 +32,7 @@ private:
 	string inputFile, outputFile;
 	signed short Blocks[1000];
 	vector<signed short> inputBuff;
+	vector<signed short>* outputBlock;
 	vector<Block> inputBlocks;
 	vector<signed short> data;
 	signed short sample;
